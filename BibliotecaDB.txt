@@ -1,0 +1,74 @@
+-- Crear base de datos
+CREATE DATABASE IF NOT EXISTS BibliotecaDB;
+USE BibliotecaDB;
+
+-- Tabla Autor
+CREATE TABLE IF NOT EXISTS Autor (
+    AutorID INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(100) NOT NULL,
+    Nacionalidad VARCHAR(50)
+);
+
+-- Tabla Libro
+CREATE TABLE IF NOT EXISTS Libro (
+    LibroID INT AUTO_INCREMENT PRIMARY KEY,
+    Titulo VARCHAR(150) NOT NULL,
+    AñoPublicacion INT,
+    Genero VARCHAR(50),
+    AutorID INT NOT NULL,
+    -- Agregamos un campo para la cantidad disponible de libros
+    CantidadDisponible INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (AutorID) REFERENCES Autor(AutorID) ON DELETE CASCADE
+);
+
+-- Tabla Miembro
+CREATE TABLE IF NOT EXISTS Miembro (
+    MiembroID INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(100) NOT NULL,
+    DNI VARCHAR(15) UNIQUE,
+    Telefono VARCHAR(20),
+    CorreoElectronico VARCHAR(100) UNIQUE, -- Es buena idea que el correo también sea único
+    Direccion VARCHAR(150),
+    FechaRegistro DATE
+);
+
+-- Tabla Prestamo
+CREATE TABLE IF NOT EXISTS Prestamo (
+    PrestamoID INT AUTO_INCREMENT PRIMARY KEY,
+    LibroID INT NOT NULL,
+    MiembroID INT NOT NULL,
+    FechaPrestamo DATE NOT NULL,
+    FechaDevolucion DATE, -- Nulo si no se ha devuelto
+    FOREIGN KEY (LibroID) REFERENCES Libro(LibroID) ON DELETE CASCADE,
+    FOREIGN KEY (MiembroID) REFERENCES Miembro(MiembroID) ON DELETE CASCADE
+);
+
+
+
+-- Insertar Autores
+INSERT INTO Autor (Nombre, Nacionalidad) VALUES
+('Gabriel García Márquez', 'Colombiana'),
+('Antoine de Saint-Exupéry', 'Francesa'),
+('Miguel de Cervantes', 'Española'),
+('Jane Austen', 'Británica'),
+('George Orwell', 'Británica');
+
+-- Insertar Libros
+INSERT INTO Libro (Titulo, AñoPublicacion, Genero, AutorID, CantidadDisponible) VALUES
+('Cien años de soledad', 1967, 'Realismo Mágico', 1, 5),
+('El Principito', 1943, 'Fábula', 2, 3),
+('Don Quijote de la Mancha', 1605, 'Novela', 3, 2),
+('Orgullo y Prejuicio', 1813, 'Romance', 4, 4),
+('1984', 1949, 'Distopía', 5, 6);
+
+-- Insertar Miembros
+INSERT INTO Miembro (Nombre, DNI, Telefono, CorreoElectronico, Direccion, FechaRegistro) VALUES
+('Juan Pérez', '12345678A', '987654321', 'juan.perez@example.com', 'Calle Falsa 123', '2023-01-15'),
+('María García', '87654321B', '912345678', 'maria.garcia@example.com', 'Avenida Siempre Viva 456', '2023-02-20'),
+('Carlos Ruiz', '11223344C', '955443322', 'carlos.ruiz@example.com', 'Plaza Mayor 789', '2024-03-10');
+
+-- Insertar Préstamos (opcional, se crearán con la API)
+-- INSERT INTO Prestamo (LibroID, MiembroID, FechaPrestamo, FechaDevolucion) VALUES
+-- (1, 1, '2024-05-01', NULL); -- Juan Pérez presta "Cien años de soledad"
+-- (2, 2, '2024-05-10', NULL); -- María García presta "El Principito"
+
